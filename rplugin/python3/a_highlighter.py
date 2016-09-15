@@ -74,6 +74,7 @@ class HighlighterPlugin(object):
 
         self.nvim.current.line = str(results)
 
+        # TODO: The whole point of this... make this async! :D
         for keyword in results.keys():
             self.nvim.command('call matchaddpos("GruvboxAqua", {0})'.format(str(results[keyword])))
 
