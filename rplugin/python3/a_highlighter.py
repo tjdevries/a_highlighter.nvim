@@ -65,7 +65,8 @@ def find_argument_uses(source: str, func_name: str):
 class HighlighterPlugin(object):
     def __init__(self, nvim):
         self.nvim = nvim
-        self.syntax_src_id = 22
+        # self.syntax_src_id = self.nvim.new_highlight_source()
+        self.syntax_src_id = 0
 
     @neovim.command("AHighlighter", range='', nargs='*')
     def highlight_the_things(self, args, range):
@@ -77,15 +78,21 @@ class HighlighterPlugin(object):
 
         # TODO: The whole point of this... make this async! :D
         for keyword in results.keys():
-            self._highlight(results[keyword])
-            # self.nvim.command('call matchaddpos("GruvboxAqua", {0})'.format(str(results[keyword])))
+            for highlight in results[keyword]:
+                if len(highlight) != 3:
+                    self.nvim.command("echom 'WE GOT A NO GO'")
+                    self.nvim.command("echom '{0}'".format(highlight))
+                    continue
+
+                self._highlight(results[keyword])
+                # self.nvim.command('call matchaddpos("GruvboxAqua", {0})'.format(str(results[keyword])))
 
     # This is from chromatica.nvim
     # This gives a pretty good idea about how to highlight I think.
     # And I'm quite sure it's async
     def _highlight(self, location_list):
         """internal highlight function"""
-        buffer = self.__vim.current.buffer
+        buffer = self.nvim.current.buffer
 
         # self.profiler.start("_highlight")
         # syn_group = syntax.get_highlight(tu, buffer.name, _lbegin, _lend)
